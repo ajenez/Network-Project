@@ -8,8 +8,8 @@ Personal Favorite Code Block - This block tested my understanding of javascript 
 
 https://github.com/ajenez/Network-Project/blob/962a53c68dfe139bd7b77457b4a96203286a1390/network/static/network/index.js
 
-Extra: This was my first time using Django's Modelforms and it was really interesting discovering how they work and the power that Django has right out of the box!
+Extra: This was my first time routing through a view that would not actually be "viewed". The purpose of this view is collecting JSON data, converting it into a format the database could read, and then changing the database accordingly. 
 
-https://github.com/ajenez/Commerce-Project/blob/12a88d48103e716a35460bcd795cb7aeae381f59/auctions/views.py#L301-L313
+https://github.com/ajenez/Network-Project/blob/7ad9093c478e7ebb2b960eaf0e0beccfc2ebac5d/network/views.py#L97-L141
 
 Video demonstration: https://www.youtube.com/watch?v=MSJV6zNvL2Q
