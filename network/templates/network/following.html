@@ -1,0 +1,73 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<h2 style="margin-top: 20px; margin-left: 50px;">Posts from people you follow</h2>
+
+{% for post in posts %}
+
+<div class="flex-container" style="border: 1px solid black; text-align: left; margin-top: 20px; margin-left: 50px; max-width: 800px;">
+    <div>
+        <p id="current_post{{post.id}}" style="display: none;">{{post.id}}</p>
+        <a href="/profile/{{ post.user_id }}"><h4 id="post_creator">{{ post.user_id }}</h4></a>
+        <h6>{{ post.post_content }}</h6>
+        <h6 style="color: gray;">{{ post.post_time }}</h6>
+    </div>
+    {% if request.user.is_authenticated and post.user_id == request.user %}
+        <div class="edit-field">
+            <button style="margin-left: -8px;" class="btn edit-btn edit" data-postid="{{ post.id }}">Edit</button>
+        </div>
+    {% endif %}
+        {% for key, value in likes_dict.items %}
+        <!-- WHEN UNLIKING -->
+            {% if key == post.id and request.user in value.1 %}
+                <div id="like-view{{ post.id }}">
+                    <button type="submit" data-postid="{{ post.id }}" class="remove_like" id="remove_like{{ post.id }}" style="background-color: white; border: none;"><span style="display: inline-block;"><img src="/static/network/media/likeheartfull.png" style="max-width: 20px;"></span></button><span style="display: inline-block;"><h6>{{ value.0 }}</h6></span>
+                </div>
+                <div style="display: none;" id="no-like-view{{ post.id }}">
+                    <button type="submit" data-postid="{{ post.id }}" class="add_like" id="add_like{{ post.id }}" style="background-color: white; border: none;"><span style="display: inline-block;"><img src=/static/network/media/likeheart.png alt="Heart-Shaped Like Button" style="max-width: 30px; margin-left: -5px; margin-bottom: 3px; margin-top: 6px; "/></span></button><span style="display: inline-block;"><h6>{{ value.2 }}</h6></span>
+                </div>
+        <!-- WHEN LIKING -->
+            {% elif key == post.id and request.user not in value.1 %}
+                <div id="no-like-view{{ post.id }}">
+                    <button type="submit" data-postid="{{ post.id }}" class="add_like" id="add_like{{ post.id }}" style="background-color: white; border: none;"><span style="display: inline-block;"><img src=/static/network/media/likeheart.png alt="Heart-Shaped Like Button" style="max-width: 30px; margin-left: -5px; margin-bottom: 3px; margin-top: 6px; "/></span></button><span style="display: inline-block;"><h6>{{ value.0 }}</h6></span>
+                </div>
+                <div style="display: none;" id="like-view{{ post.id }}">
+                    <button type="submit" data-postid="{{ post.id }}" class="remove_like" id="remove_like{{ post.id }}" style="background-color: white; border: none;"><span style="display: inline-block;"><img src="/static/network/media/likeheartfull.png" style="max-width: 20px;"></span></button><span style="display: inline-block;"><h6>{{ value.3 }}</h6></span>
+                </div>
+
+                
+            {% endif %}
+        {% endfor %}
+</div>
+
+{% endfor %}
+
+<div style="margin-top: 20px; margin-left: 50px;" class="pagination">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+                {% if posts.has_previous %}
+                    <li class="page-item>"><a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a></li>
+                {% else %}
+                    <li class="page-item>"><a class="page-link" aria-disabled="true">Previous</a></li>
+                {% endif %}
+
+                {% for pg in posts.paginator.page_range %}
+                    {% if posts.number == pg %}
+                    <li class="page-item active" aria-current="page"><a class="page-link" href="?page={{ pg }}">{{ pg}}</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ pg}}">{{ pg }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if posts.has_next %}
+                <li class="page-item>"><a class="page-link" href="?page={{ posts.next_page_number }}">Next</a></li>
+                {% else %}
+                <li class="page-item>"><a class="page-link">Next</a></li>
+                {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<script>src=/static/network/index.js</script>
+
+{% endblock %}

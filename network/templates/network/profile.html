@@ -1,0 +1,123 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div id="user_items">
+    <h2>{{whos_page}}</h2>
+
+    <h4>Followers</h4>
+    <h6>{{follower_count}}</h6>
+    <h4>Following</h4>
+    <h6>{{following_count}}</h6>
+    {% if user.is_authenticated and whos_page != userstring %}
+        {% if request.user not in follow_list %}
+                <form id="follow_form" method="POST">
+                    {% csrf_token %}
+                    {{ WatchListForm.as_p}}
+                    <input style="margin-top: 10px" value="Follow" name='Follow' type="submit" class="btn btn-primary">
+                </form>
+        {% else %}
+            <form id="unfollow_form" method="POST">
+                {% csrf_token %}
+                {{ WatchListForm.as_p}}
+                <input style="margin-top: 10px" value="Unfollow" name='UnFollow' type="submit" class="btn btn-primary">
+            </form>
+        {% endif %}
+    {% endif %}
+</div>
+
+    {% if user.is_authenticated and whos_page == userstring %}
+        <div style="margin-top: 20px; margin-left: 50px; max-width: 800px;">
+            <h3>Create New Post</h3>
+            <form id="new_post_form" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input disabled hidden class="form-control" value="{{ request.user.username}}">
+                </div>
+                <textarea required name="content" style="height: 100px; resize: none;" maxlength="200" class="form-control" id="new_post_content" placeholder="Content"></textarea>
+                <input style="margin-top: 10px" value="Post" type="submit" class="btn btn-primary">
+            </form>
+        </div>
+    {% endif %}
+    <h3 style="margin-top: 20px; margin-left: 50px; max-width: 800px;">Your Posts</h3>
+{% for post in posts %}
+
+    <div class="flex-container" style="border: 1px solid black; text-align: left; margin-top: 20px; margin-left: 50px; max-width: 800px;">
+        <div>
+            <p id="current_post{{post.id}}" style="display: none;">{{post.id}}</p>
+            <a href="/profile/{{ post.user_id }}"><h4 id="post_creator">{{ post.user_id }}</h4></a>
+            <div id=content{{post.id}}>
+                {{ post.post_content }}
+            </div>
+            <h6 style="color: gray;">{{ post.post_time }}</h6>
+        </div>
+
+
+
+        {% if request.user.is_authenticated and post.user_id == request.user %}
+            <div class="edit-field">
+                <button style="margin-left: 0px; padding: 5px;" class="btn btn-primary edit" data-postid="{{ post.id }}">Edit</button>
+            </div>
+        {% endif %}
+
+
+
+        {% for key, value in likes_dict.items %}
+        <!-- WHEN UNLIKING -->
+            {% if key == post.id and request.user in value.1 %}
+                <div id="like-view{{ post.id }}">
+                    <button type="submit" data-postid="{{ post.id }}" class="remove_like" id="remove_like{{ post.id }}" style="background-color: white; border: none;"><span style="display: inline-block;"><img src="/static/network/media/likeheartfull.png" style="max-width: 20px;"></span></button><span style="display: inline-block;"><h6>{{ value.0 }}</h6></span>
+                </div>
+                <div style="display: none;" id="no-like-view{{ post.id }}">
+                    <button type="submit" data-postid="{{ post.id }}" class="add_like" id="add_like{{ post.id }}" style="background-color: white; border: none;"><span style="display: inline-block;"><img src=/static/network/media/likeheart.png alt="Heart-Shaped Like Button" style="max-width: 30px; margin-left: -5px; margin-bottom: 3px; margin-top: 6px; "/></span></button><span style="display: inline-block;"><h6>{{ value.2 }}</h6></span>
+                </div>
+        <!-- WHEN LIKING -->
+            {% elif key == post.id and request.user not in value.1 %}
+                <div id="no-like-view{{ post.id }}">
+                    <button type="submit" data-postid="{{ post.id }}" class="add_like" id="add_like{{ post.id }}" style="background-color: white; border: none;"><span style="display: inline-block;"><img src=/static/network/media/likeheart.png alt="Heart-Shaped Like Button" style="max-width: 30px; margin-left: -5px; margin-bottom: 3px; margin-top: 6px; "/></span></button><span style="display: inline-block;"><h6>{{ value.0 }}</h6></span>
+                </div>
+                <div style="display: none;" id="like-view{{ post.id }}">
+                    <button type="submit" data-postid="{{ post.id }}" class="remove_like" id="remove_like{{ post.id }}" style="background-color: white; border: none;"><span style="display: inline-block;"><img src="/static/network/media/likeheartfull.png" style="max-width: 20px;"></span></button><span style="display: inline-block;"><h6>{{ value.3 }}</h6></span>
+                </div>
+
+                
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+
+    <div style="margin-top: 20px; margin-left: 50px;" class="pagination">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                    {% if posts.has_previous %}
+                        <li class="page-item>"><a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a></li>
+                    {% else %}
+                        <li class="page-item>"><a class="page-link" aria-disabled="true">Previous</a></li>
+                    {% endif %}
+
+                    {% for pg in posts.paginator.page_range %}
+                        {% if posts.number == pg %}
+                        <li class="page-item active" aria-current="page"><a class="page-link" href="?page={{ pg }}">{{ pg}}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ pg}}">{{ pg }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if posts.has_next %}
+                    <li class="page-item>"><a class="page-link" href="?page={{ posts.next_page_number }}">Next</a></li>
+                    {% else %}
+                    <li class="page-item>"><a class="page-link">Next</a></li>
+                    {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+
+<script>src=/static/network/index.js</script>
+
+{% endblock %}
+
+<!--Display the number of followers the user has, as well as the number of people that the user follows.
+Display all of the posts for that user, in reverse chronological order.
+For any other user who is signed in, this page should also display a “Follow” or “Unfollow” button that 
+will let the current user toggle whether or not they are following this user’s posts. Note that this only 
+applies to any “other” user: a user should not be able to follow themselves.-->
