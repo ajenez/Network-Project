@@ -6,7 +6,7 @@ This project is a network site where users have the ability to register, login, 
 
 Personal Favorite Code Block - This block tested my understanding of javascript and required learning to route fetch requests through a specific Django view to make changes within the database to add and remove likes using POST/DELETE requests and edit current posts using a PUT request.
 
-https://github.com/ajenez/Commerce-Project/blob/12a88d48103e716a35460bcd795cb7aeae381f59/auctions/views.py#L76-L207
+https://github.com/ajenez/Network-Project/blob/962a53c68dfe139bd7b77457b4a96203286a1390/network/static/network/index.js
 
 Extra: This was my first time using Django's Modelforms and it was really interesting discovering how they work and the power that Django has right out of the box!
 
